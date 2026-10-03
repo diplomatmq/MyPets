@@ -157,7 +157,7 @@ partnership
 ```text
 🥚
 
-DIPLOMAT ✓
+PLAYER ✓
 PARTNER  ✓
 
 2 / 2
@@ -746,7 +746,7 @@ Celebrating
 ```text
 Pet: Max
 
-DIPLOMAT
+PLAYER
 Friendship: 87
 
 PARTNER
@@ -762,9 +762,9 @@ Friendship: 72
 ```text
 TODAY
 
-09:21 DIPLOMAT 🍖 покормил
+09:21 PLAYER 🍖 покормил
 11:48 PARTNER  🎾 поиграл
-14:10 DIPLOMAT 💧 напоил
+14:10 PLAYER 💧 напоил
 19:32 PARTNER  🛁 искупал
 ```
 

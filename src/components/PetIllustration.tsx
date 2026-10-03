@@ -25,6 +25,9 @@ export default function PetIllustration({ species, accessory, size = 220 }: PetI
   const wideHead = species === 'crocodile' || species === 'frog'
   const roundEars = species === 'panda' || species === 'bear' || species === 'monkey'
   const hasWings = species === 'penguin'
+  const hasSpots = species === 'dog' || species === 'crocodile' || species === 'frog'
+  const hasMask = species === 'panda'
+  const hasStripes = species === 'cat'
 
   return (
     <svg className="pet-illustration" width={size} height={size} viewBox="0 0 240 240" role="img" aria-label={`${species} pet`}>
@@ -47,6 +50,9 @@ export default function PetIllustration({ species, accessory, size = 220 }: PetI
         <path d={longEars ? 'M78 57L72 22c0-4 5-5 8-1l18 34z' : 'M82 61l-4-20c0-5 5-6 9-2l14 20z'} fill={colors.inner} />
         <path d={longEars ? 'M162 57l6-35c0-4-5-5-8-1l-18 34z' : 'M158 61l4-20c0-5-5-6-9-2l-14 20z'} fill={colors.inner} />
         <ellipse cx="120" cy="105" rx={wideHead ? 70 : 62} ry="57" fill={colors.body} />
+        {hasSpots && <><circle cx="74" cy="88" r="10" fill={colors.shade} opacity=".75" /><circle cx="163" cy="76" r="7" fill={colors.shade} opacity=".72" /><circle cx="180" cy="150" r="6" fill={colors.shade} opacity=".7" /></>}
+        {hasMask && <path d="M62 102c14-24 35-27 58-12 23-15 44-12 58 12-14 21-39 19-58 5-19 14-44 16-58-5z" fill={colors.shade} opacity=".95" />}
+        {hasStripes && <><path d="M74 80l20 18M166 80l-20 18M69 94l19 12M171 94l-19 12" stroke={colors.shade} strokeWidth="6" strokeLinecap="round" opacity=".7" /></>}
         <ellipse cx="96" cy="106" rx="10" ry="14" fill={colors.shade} opacity=".24" />
         <ellipse cx="144" cy="106" rx="10" ry="14" fill={colors.shade} opacity=".24" />
         <ellipse cx="96" cy="103" rx="8" ry="11" fill="#233f42" /><ellipse cx="144" cy="103" rx="8" ry="11" fill="#233f42" />
@@ -56,6 +62,7 @@ export default function PetIllustration({ species, accessory, size = 220 }: PetI
         <ellipse cx="75" cy="126" rx="13" ry="7" fill="#ed8a83" opacity=".5" /><ellipse cx="165" cy="126" rx="13" ry="7" fill="#ed8a83" opacity=".5" />
       </g>
       {accessory && <g className="illustration-accessory"><circle cx="198" cy="35" r="22" fill="white" opacity=".82" /><text x="198" y="43" textAnchor="middle" fontSize="26">{accessory}</text></g>}
+      <g className="illustration-sparkles"><circle cx="35" cy="61" r="3" fill="#fff" /><circle cx="205" cy="172" r="3" fill="#fff" /><path d="M39 42v14M32 49h14M201 186v14M194 193h14" stroke="#fff" strokeWidth="2" strokeLinecap="round" opacity=".8" /></g>
     </svg>
   )
 }
