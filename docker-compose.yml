@@ -4,6 +4,8 @@ services:
       context: .
       dockerfile: frontend.Dockerfile
     restart: unless-stopped
+    ports:
+      - "127.0.0.1:5183:80"
 
   backend:
     build:
@@ -14,23 +16,11 @@ services:
       TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN}
       DATABASE_URL: postgresql://duo_pet:duo_pet_local@postgres:5432/duo_pet
       REDIS_URL: redis://redis:6379
+    ports:
+      - "127.0.0.1:8011:3000"
     depends_on:
       - postgres
       - redis
-
-  caddy:
-    image: caddy:2.8-alpine
-    restart: unless-stopped
-    ports:
-      - "80:80"
-      - "443:443"
-    volumes:
-      - ./Caddyfile:/etc/caddy/Caddyfile:ro
-      - caddy_data:/data
-      - caddy_config:/config
-    depends_on:
-      - frontend
-      - backend
 
   postgres:
     image: postgres:16-alpine
@@ -40,8 +30,6 @@ services:
       POSTGRES_DB: duo_pet
       POSTGRES_USER: duo_pet
       POSTGRES_PASSWORD: duo_pet_local
-    ports:
-      - "5432:5432"
     volumes:
       - duo_pet_postgres:/var/lib/postgresql/data
       - ./backend/database/001_foundation.sql:/docker-entrypoint-initdb.d/001_foundation.sql:ro
@@ -50,10 +38,6 @@ services:
     image: redis:7-alpine
     container_name: duo-pet-redis
     restart: unless-stopped
-    ports:
-      - "6379:6379"
 
 volumes:
   duo_pet_postgres:
-  caddy_data:
-  caddy_config:
