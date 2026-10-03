@@ -1,0 +1,22 @@
+# Dependencies
+node_modules/
+**/node_modules/
+
+# Build output
+dist/
+**/dist/
+
+# Local environment
+.env
+.env.*
+!.env.example
+
+# Tooling and caches
+.vite/
+*.tsbuildinfo
+npm-debug.log*
+.DS_Store
+
+# Local IDE/worktree metadata
+.kilo/worktrees/
+.vscode/
