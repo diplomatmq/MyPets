@@ -153,7 +153,7 @@ function CollectionDetail({ showToast }: { showToast: (message: string) => void 
 
 function App() {
   const [activeTab, setActiveTab] = useState<Tab>('home')
-  const [hasPet, setHasPet] = useState(() => localStorage.getItem('duo-pet-hatched') === 'true')
+  const [hasPet, setHasPet] = useState(() => localStorage.getItem('duo-pet-hatched-v2') === 'true')
   const [stats, setStats] = useState<Record<StatKey, number>>(() => {
     const saved = localStorage.getItem('duo-pet-stats')
     return saved ? { ...initialStats, ...(JSON.parse(saved) as Record<StatKey, number>) } : initialStats
@@ -228,7 +228,7 @@ function App() {
     setFlow('closed')
     setEggProgress(0)
     setHasPet(true)
-    localStorage.setItem('duo-pet-hatched', 'true')
+    localStorage.setItem('duo-pet-hatched-v2', 'true')
     showToast('Miso joined your duo!')
   }
 
