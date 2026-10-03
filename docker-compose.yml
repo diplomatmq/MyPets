@@ -40,4 +40,4 @@ services:
     restart: unless-stopped
 
 volumes:
-  duo_pet_postgres:
+    duo_pet_postgres:

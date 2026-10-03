@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import PetIllustration from './components/PetIllustration'
-import { authenticateTelegram, createPartnershipInvite, haptic, initTelegramWebApp, submitPetAction, type TelegramWebApp } from './telegram'
+import EggIllustration from './components/EggIllustration'
+import { authenticateTelegram, createPartnershipInvite, haptic, initTelegramWebApp, submitPetAction, type TelegramUserResponse, type TelegramWebApp } from './telegram'
 import type { PetSpeciesKey } from './three/species'
 import {
   Bath,
@@ -27,13 +28,14 @@ import {
   Star,
   Store,
   Trophy,
+  UserRound,
   Utensils,
   Waves,
   Zap,
 } from 'lucide-react'
 
-type StatKey = 'hunger' | 'thirst' | 'energy' | 'mood' | 'cleanliness'
-type Tab = 'home' | 'pet' | 'room' | 'shop' | 'more'
+type StatKey = 'health' | 'hunger' | 'thirst' | 'energy' | 'mood' | 'cleanliness'
+type Tab = 'home' | 'pet' | 'room' | 'shop' | 'more' | 'profile'
 type Flow = 'closed' | 'invite' | 'egg'
 
 type Activity = {
@@ -45,6 +47,7 @@ type Activity = {
 }
 
 const initialStats: Record<StatKey, number> = {
+  health: 96,
   hunger: 82,
   thirst: 74,
   energy: 67,
@@ -67,6 +70,7 @@ const actions: Array<{
 ]
 
 const statLabels: Record<StatKey, string> = {
+  health: 'Health',
   hunger: 'Hunger',
   thirst: 'Thirst',
   energy: 'Energy',
@@ -76,6 +80,16 @@ const statLabels: Record<StatKey, string> = {
 
 function clamp(value: number) {
   return Math.max(0, Math.min(100, value))
+}
+
+function EggLanding({ onStart, onInvite, showToast }: { onStart: () => void; onInvite: () => void; showToast: (message: string) => void }) {
+  return <div className="egg-landing"><div className="game-hud"><div className="hud-profile"><div className="hud-avatar">P</div><div><strong>Pet parent</strong><small><span>LV. 01</span> · just getting started</small><div className="hud-xp"><i /></div></div></div><div className="hud-wallets"><div><Coins size={16} /><strong>12 450</strong><button onClick={() => showToast('Coins are earned by caring for your pet')}><Plus size={14} /></button></div><div><Star size={16} fill="currentColor" /><strong>320</strong><button onClick={() => showToast('Stars are Telegram premium currency')}><Plus size={14} /></button></div><button className="hud-settings" onClick={() => showToast('Settings are coming soon')}><CircleHelp size={18} /></button></div></div><div className="landing-stage"><div className="room-ceiling" /><div className="room-wall"><div className="wall-window"><span /><span /></div><div className="wall-frame">✦</div><div className="wall-shelf"><span>🌿</span><span>🕯️</span><span>🪴</span></div></div><div className="room-light light-left" /><div className="room-light light-right" /><div className="landing-copy"><div className="landing-kicker"><span className="live-dot" /> YOUR FIRST SHARED MOMENT</div><h1>One little life,<br /><em>raised together.</em></h1><p>Invite your person. Open the mystery egg. Meet the friend who joins your story.</p></div><div className="partner-card"><div className="partner-avatars"><span>P</span><span>+</span></div><div><strong>Find your duo</strong><small>Invite a partner to begin</small></div><button onClick={onInvite}><ChevronRight size={18} /></button></div><div className="landing-room"><div className="room-glow" /><div className="egg-pedestal"><div className="egg-halo" /><div className="landing-egg"><EggIllustration /></div><span>MYSTERY EGG</span></div><div className="landing-plant plant-left">🌿</div><div className="landing-plant plant-right">🌿</div><div className="landing-sofa">🛋️</div><div className="landing-table">◒</div><div className="landing-rug" /></div><div className="egg-callout"><Heart size={14} fill="currentColor" /><span><strong>Magical egg</strong><small>Open it together with your partner</small></span><ChevronRight size={17} /></div><button className="hero-open-button" onClick={onStart}><span className="hero-egg-icon">🥚</span><span><strong>Open the egg</strong><small><Star size={12} fill="currentColor" /> 100</small></span><ChevronRight size={21} /></button><div className="side-action side-left" onClick={() => showToast('Cases will bring new outfits and room items')}><Gift size={24} /><strong>Cases</strong><small>Outfits & items</small><ChevronRight size={16} /></div><div className="side-action side-right" onClick={() => showToast('The marketplace is coming soon')}><Store size={24} /><strong>Market</strong><small>Buy & trade</small><ChevronRight size={16} /></div><div className="inventory-strip"><p><Sparkles size={15} /> MY INVENTORY</p><div><button onClick={() => showToast('Clothes collection')}><span>🧥</span><small>Clothes</small></button><button onClick={() => showToast('Accessories collection')}><span>🕶️</span><small>Accessories</small></button><button onClick={() => showToast('Furniture collection')}><span>🪑</span><small>Furniture</small></button><button onClick={() => showToast('Food collection')}><span>🍲</span><small>Food</small></button><button onClick={() => showToast('More items coming soon')}><span>🎁</span><small>Other</small></button></div></div><div className="landing-note"><Heart size={14} fill="currentColor" /> One pet. Two people. A life to grow together.</div></div></div>
+}
+
+function ProfileDetail({ user, coins, showToast }: { user: TelegramUserResponse['user'] | null; coins: number; showToast: (message: string) => void }) {
+  const name = user?.first_name ?? 'Pet parent'
+  const username = user?.username ? `@${user.username}` : '@your_username'
+  return <div className="profile-page"><section className="profile-hero"><div className="profile-avatar">{user?.photo_url ? <img src={user.photo_url} alt={name} /> : user?.first_name?.slice(0, 1).toUpperCase() ?? 'D'}</div><div><p className="eyebrow">YOUR PROFILE</p><h1>{name}</h1><p>{username}</p></div><button className="profile-edit" onClick={() => showToast('Profile settings are coming soon')}><MoreHorizontal size={19} /></button></section><div className="profile-stats"><div><strong>08</strong><span>Pet level</span></div><div><strong>26</strong><span>Collected</span></div><div><strong>{coins.toLocaleString()}</strong><span>Coins</span></div></div><section className="profile-section"><div className="section-heading"><div><p className="eyebrow">YOUR JOURNEY</p><h2>Little milestones</h2></div><Trophy size={19} color="#c79636" /></div><div className="milestone-list"><div className="milestone done"><span>🥚</span><div><strong>First beginning</strong><p>Open your first shared egg</p></div><Check size={16} /></div><div className="milestone done"><span>🤝</span><div><strong>Better together</strong><p>Complete 10 duo actions</p></div><Check size={16} /></div><div className="milestone"><span>🌿</span><div><strong>Make it home</strong><p>Place 5 room items</p></div><small>2 / 5</small></div></div></section><section className="profile-section settings-list"><button onClick={() => showToast('Notifications are on')}><Bell size={18} /><span>Notifications</span><ChevronRight size={16} /></button><button onClick={() => showToast('Language follows Telegram')}><CircleHelp size={18} /><span>Help & support</span><ChevronRight size={16} /></button></section></div>
 }
 
 const wardrobe = [
@@ -139,6 +153,7 @@ function CollectionDetail({ showToast }: { showToast: (message: string) => void 
 
 function App() {
   const [activeTab, setActiveTab] = useState<Tab>('home')
+  const [hasPet, setHasPet] = useState(() => localStorage.getItem('duo-pet-hatched-v2') === 'true')
   const [stats, setStats] = useState<Record<StatKey, number>>(() => {
     const saved = localStorage.getItem('duo-pet-stats')
     return saved ? { ...initialStats, ...(JSON.parse(saved) as Record<StatKey, number>) } : initialStats
@@ -157,13 +172,14 @@ function App() {
     ]
   })
   const [telegram, setTelegram] = useState<TelegramWebApp | null>(null)
+  const [telegramUser, setTelegramUser] = useState<TelegramUserResponse['user'] | null>(null)
 
   useEffect(() => {
     let mounted = true
     initTelegramWebApp().then((webApp) => {
       if (!mounted) return
       setTelegram(webApp)
-      if (webApp) void authenticateTelegram(webApp)
+      if (webApp) void authenticateTelegram(webApp).then((result) => { if (result?.user) setTelegramUser(result.user) })
     })
     return () => { mounted = false }
   }, [])
@@ -211,11 +227,18 @@ function App() {
 
     setFlow('closed')
     setEggProgress(0)
+    setHasPet(true)
+    localStorage.setItem('duo-pet-hatched-v2', 'true')
     showToast('Miso joined your duo!')
   }
 
+  const startEgg = () => {
+    setFlow('egg')
+    haptic(telegram, 'medium')
+  }
+
   return (
-    <div className="app-shell">
+    <div className={hasPet ? 'app-shell' : 'app-shell landing-active'}>
       <header className="topbar">
         <div className="brand-lockup">
           <div className="brand-mark"><PawPrint size={19} strokeWidth={2.8} /></div>
@@ -227,16 +250,17 @@ function App() {
         <div className="top-actions">
           <button className="icon-button" aria-label="Help" onClick={() => showToast('Your shared space is looking good')}><CircleHelp size={19} /></button>
           <button className="icon-button notification-button" aria-label="Notifications" onClick={() => showToast('No new notifications')}><Bell size={19} /><span /></button>
-          <div className="avatar-group"><span className="avatar avatar-a">D</span><span className="avatar avatar-b">M</span></div>
+          <button className="profile-mini" onClick={() => setActiveTab('profile')}><span className="profile-mini-avatar">{telegramUser?.first_name?.slice(0, 1).toUpperCase() ?? 'P'}</span><span className="profile-mini-name">{telegramUser?.username ? `@${telegramUser.username}` : 'Your profile'}</span></button>
         </div>
       </header>
 
-      <main className="main-content">
-        {activeTab === 'pet' ? <PetDetail stats={stats} action={petAction} showToast={showToast} /> : activeTab === 'room' ? <RoomDetail showToast={showToast} /> : activeTab === 'shop' ? <ShopDetail coins={coins} onPurchase={(price, name) => { setCoins((current) => current - price); showToast(`${name} purchased`) }} showToast={showToast} /> : activeTab === 'more' ? <CollectionDetail showToast={showToast} /> : <>
+      <main className={hasPet ? 'main-content' : 'main-content landing-main'}>
+        {!hasPet ? <EggLanding onStart={startEgg} onInvite={() => { setFlow('invite'); haptic(telegram) }} showToast={showToast} /> : activeTab === 'profile' ? <ProfileDetail user={telegramUser} coins={coins} showToast={showToast} /> : activeTab === 'pet' ? <PetDetail stats={stats} action={petAction} showToast={showToast} /> : activeTab === 'room' ? <RoomDetail showToast={showToast} /> : activeTab === 'shop' ? <ShopDetail coins={coins} onPurchase={(price, name) => { setCoins((current) => current - price); showToast(`${name} purchased`) }} showToast={showToast} /> : activeTab === 'more' ? <CollectionDetail showToast={showToast} /> : <>
+        <section className="top-status"><div className="top-status-pet"><span className="mini-pet-dot">🦊</span><div><strong>Miso</strong><small>feeling good</small></div></div>{(['health', 'hunger', 'thirst', 'energy', 'mood'] as StatKey[]).map((key) => <div className={`top-stat top-stat-${key}`} key={key}><div className="top-stat-label"><span>{key === 'health' ? 'Health' : key === 'hunger' ? 'Hunger' : key === 'thirst' ? 'Thirst' : key === 'energy' ? 'Energy' : 'Mood'}</span><strong>{stats[key]}%</strong></div><div className="top-stat-track"><i style={{ width: `${stats[key]}%` }} /></div></div>)}</section>
         <section className="welcome-row">
           <div>
             <p className="eyebrow"><span className="live-dot" /> YOUR SHARED SPACE</p>
-            <h1>Good afternoon,<br /><em>Diplomat.</em></h1>
+            <h1>Good afternoon,<br /><em>Pet parent.</em></h1>
           </div>
           <button className="streak-pill" onClick={() => showToast('You are on a 7 day care streak')}><Flame size={16} fill="currentColor" /> 7 day streak</button>
         </section>
@@ -244,19 +268,7 @@ function App() {
         <section className="hero-grid">
           <div className="pet-card">
             <div className="pet-card-top"><span className="status-tag"><span className="online-dot" /> Miso is happy</span><button className="more-button" aria-label="More options"><MoreHorizontal size={21} /></button></div>
-            <div className="pet-scene">
-              <div className="scene-sun" />
-              <div className="cloud cloud-one" /><div className="cloud cloud-two" />
-              <div className="hill hill-back" /><div className="hill hill-front" />
-              <div className="sparkle sparkle-one">✦</div><div className="sparkle sparkle-two">✦</div>
-              <div className="pet-character" aria-label="Miso the fox">
-                <div className="tail"><span /></div>
-                <div className="pet-body"><div className="belly" /><div className="leg leg-left" /><div className="leg leg-right" /></div>
-                <div className="pet-head"><div className="ear ear-left" /><div className="ear ear-right" /><div className="face"><span className="eye eye-left" /><span className="eye eye-right" /><span className="blush blush-left" /><span className="blush blush-right" /><span className="nose" /><span className="smile" /></div></div>
-              </div>
-              <div className="pet-shadow" />
-              <div className="scene-label"><span>LEVEL 08</span><strong>Miso</strong><small>Fox · Uncommon</small></div>
-            </div>
+            <div className={`pet-scene home-illustration action-${petAction}`}><div className="scene-sun" /><div className="cloud cloud-one" /><div className="cloud cloud-two" /><div className="hill hill-back" /><div className="hill hill-front" /><PetIllustration species="fox" accessory="🧥" size={290} /><div className="scene-label"><span>LEVEL 08</span><strong>Miso</strong><small>Fox · Uncommon</small></div></div>
             <div className="pet-card-footer"><div className="xp-copy"><span>Growing together</span><strong>1,240 <small>/ 1,600 XP</small></strong></div><div className="xp-bar"><span style={{ width: '77%' }} /></div><button className="round-arrow" aria-label="View pet" onClick={() => setActiveTab('pet')}><ChevronRight size={18} /></button></div>
           </div>
 
@@ -279,9 +291,9 @@ function App() {
         </>}
       </main>
 
-      <nav className="bottom-nav">{([{ id: 'home', label: 'Home', icon: Home }, { id: 'pet', label: 'Miso', icon: PawPrint }, { id: 'room', label: 'Room', icon: MapPin }, { id: 'shop', label: 'Shop', icon: Store }, { id: 'more', label: 'More', icon: MoreHorizontal }] as const).map(({ id, label, icon: Icon }) => <button className={activeTab === id ? 'nav-item active' : 'nav-item'} key={id} onClick={() => setActiveTab(id)}><Icon size={19} strokeWidth={activeTab === id ? 2.5 : 2} /><span>{label}</span>{id === 'shop' && <i />}</button>)}</nav>
+      <nav className="bottom-nav">{([{ id: 'home', label: 'Home', icon: Home }, { id: 'pet', label: 'Pet', icon: PawPrint }, { id: 'shop', label: 'Shop', icon: Store }, { id: 'more', label: 'Collection', icon: Sparkles }, { id: 'profile', label: 'Profile', icon: UserRound }] as const).map(({ id, label, icon: Icon }) => <button className={activeTab === id ? 'nav-item active' : 'nav-item'} key={id} onClick={() => { if (hasPet) setActiveTab(id); else if (id !== 'home') showToast('Open your first egg to unlock this') }}><span className="nav-icon-wrap"><Icon size={19} strokeWidth={activeTab === id ? 2.5 : 2} />{id === 'shop' && <i />}</span><span>{label}</span></button>)}</nav>
       {flow === 'invite' && <div className="modal-backdrop" role="presentation" onClick={() => setFlow('closed')}><section className="modal-card invite-modal" role="dialog" aria-modal="true" aria-labelledby="invite-title" onClick={(event) => event.stopPropagation()}><button className="modal-close" aria-label="Close" onClick={() => setFlow('closed')}>×</button><div className="modal-kicker">A LITTLE LIFE, TOGETHER</div><div className="invite-orbit"><span className="invite-star">✦</span><div className="invite-egg">🥚</div><span className="invite-heart">♡</span></div><h2 id="invite-title">Invite Maya<br /><em>to meet Miso.</em></h2><p>Send a private invite and open your first egg together. No rush, just one tiny beginning.</p><div className="invite-people"><div><span className="avatar avatar-a">D</span><strong>You</strong></div><div className="invite-line" /><div><span className="avatar avatar-b">M</span><strong>Maya</strong></div></div><button className="primary-button" onClick={async () => { const invite = telegram ? await createPartnershipInvite(telegram) : null; setFlow('egg'); showToast(invite ? 'Secure invite link created' : 'Demo invite ready') }}>Send invite <ChevronRight size={17} /></button><button className="modal-secondary" onClick={() => setFlow('closed')}>Maybe later</button></section></div>}
-      {flow === 'egg' && <div className="modal-backdrop" role="presentation"><section className={`modal-card egg-modal egg-step-${eggProgress}`} role="dialog" aria-modal="true" aria-labelledby="egg-title"><button className="modal-close" aria-label="Close" onClick={() => setFlow('closed')}>×</button><div className="modal-kicker">YOUR FIRST MOMENT</div><div className="egg-stage"><div className="egg-glow" /><div className="hatch-egg">🥚</div>{eggProgress === 2 && <div className="hatch-sparkles">✦ ✦ ✦</div>}</div><p className="egg-count">{eggProgress} / 2 READY</p><h2 id="egg-title">{eggProgress === 2 ? <>Something wonderful<br /><em>is hatching.</em></> : <>Wait for your<br /><em>other half.</em></>}</h2><p>{eggProgress === 0 ? 'Tap in first. Maya will join you before the egg opens.' : eggProgress === 1 ? 'Your side is done. Maya needs to tap in too.' : 'Both of you are here. Open the egg and meet your new companion.'}</p><div className="egg-progress"><span className={eggProgress >= 1 ? 'ready' : ''}>D</span><i className={eggProgress === 2 ? 'ready' : ''} /><span className={eggProgress === 2 ? 'ready' : ''}>M</span></div><button className="primary-button" onClick={openEgg}>{eggProgress === 0 ? 'Open my side' : eggProgress === 1 ? 'Maya is ready' : 'Open together'} <Sparkles size={16} /></button></section></div>}
+      {flow === 'egg' && <div className="modal-backdrop" role="presentation"><section className={`modal-card egg-modal egg-step-${eggProgress}`} role="dialog" aria-modal="true" aria-labelledby="egg-title"><button className="modal-close" aria-label="Close" onClick={() => setFlow('closed')}>×</button><div className="modal-kicker">YOUR FIRST MOMENT</div><div className="egg-stage"><div className="egg-glow" /><div className="hatch-egg"><EggIllustration cracked={eggProgress === 2} /></div>{eggProgress === 2 && <div className="hatch-sparkles">✦ ✦ ✦</div>}</div><p className="egg-count">{eggProgress} / 2 READY</p><h2 id="egg-title">{eggProgress === 2 ? <>Something wonderful<br /><em>is hatching.</em></> : <>Wait for your<br /><em>other half.</em></>}</h2><p>{eggProgress === 0 ? 'Tap in first. Maya will join you before the egg opens.' : eggProgress === 1 ? 'Your side is done. Maya needs to tap in too.' : 'Both of you are here. Open the egg and meet your new companion.'}</p><div className="egg-progress"><span className={eggProgress >= 1 ? 'ready' : ''}>D</span><i className={eggProgress === 2 ? 'ready' : ''} /><span className={eggProgress === 2 ? 'ready' : ''}>M</span></div><button className="primary-button" onClick={openEgg}>{eggProgress === 0 ? 'Open my side' : eggProgress === 1 ? 'Maya is ready' : 'Open together'} <Sparkles size={16} /></button></section></div>}
       {toast && <div className="toast"><Sparkles size={16} /> {toast}</div>}
     </div>
   )

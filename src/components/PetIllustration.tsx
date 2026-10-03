@@ -25,6 +25,17 @@ export default function PetIllustration({ species, accessory, size = 220 }: PetI
   const wideHead = species === 'crocodile' || species === 'frog'
   const roundEars = species === 'panda' || species === 'bear' || species === 'monkey'
   const hasWings = species === 'penguin'
+  const hasSpots = species === 'dog' || species === 'crocodile' || species === 'frog'
+  const hasMask = species === 'panda'
+  const hasStripes = species === 'cat'
+  const isPenguin = species === 'penguin'
+  const isFrog = species === 'frog'
+  const isCrocodile = species === 'crocodile'
+  const isDog = species === 'dog'
+  const wearsHoodie = accessory?.toLowerCase().includes('hoodie')
+  const wearsCrown = accessory?.includes('👑')
+  const wearsShoes = accessory?.includes('👟')
+  const wearsScarf = accessory?.includes('🧣')
 
   return (
     <svg className="pet-illustration" width={size} height={size} viewBox="0 0 240 240" role="img" aria-label={`${species} pet`}>
@@ -42,20 +53,30 @@ export default function PetIllustration({ species, accessory, size = 220 }: PetI
         <ellipse cx="154" cy="206" rx="18" ry="23" fill={colors.shade} />
         {hasWings && <path d="M68 147c-28 7-30 45 2 48l17-27zM172 147c28 7 30 45-2 48l-17-27z" fill={colors.shade} />}
         {roundEars ? <><circle cx="72" cy="76" r="26" fill={colors.shade} /><circle cx="168" cy="76" r="26" fill={colors.shade} /></> : null}
-        <path d={longEars ? 'M78 72L64 8c-2-10 14-13 20-3l29 52z' : 'M76 74L69 35c-2-12 13-17 21-8l27 32z'} fill={colors.body} />
-        <path d={longEars ? 'M162 72l14-64c2-10-14-13-20-3l-29 52z' : 'M164 74l7-39c2-12-13-17-21-8l-27 32z'} fill={colors.body} />
+        <path d={longEars ? 'M78 72L64 8c-2-10 14-13 20-3l29 52z' : isDog ? 'M78 72C42 65 42 24 65 29l42 40z' : 'M76 74L69 35c-2-12 13-17 21-8l27 32z'} fill={colors.body} />
+        <path d={longEars ? 'M162 72l14-64c2-10-14-13-20-3l-29 52z' : isDog ? 'M162 72C198 65 198 24 175 29l-42 40z' : 'M164 74l7-39c2-12-13-17-21-8l-27 32z'} fill={colors.body} />
         <path d={longEars ? 'M78 57L72 22c0-4 5-5 8-1l18 34z' : 'M82 61l-4-20c0-5 5-6 9-2l14 20z'} fill={colors.inner} />
         <path d={longEars ? 'M162 57l6-35c0-4-5-5-8-1l-18 34z' : 'M158 61l4-20c0-5-5-6-9-2l-14 20z'} fill={colors.inner} />
         <ellipse cx="120" cy="105" rx={wideHead ? 70 : 62} ry="57" fill={colors.body} />
+        {isCrocodile && <path d="M60 112c17-23 103-23 120 0l-12 29H72z" fill={colors.body} />}
+        {isFrog && <><circle cx="77" cy="67" r="22" fill={colors.body} /><circle cx="163" cy="67" r="22" fill={colors.body} /></>}
+        {hasSpots && <><circle cx="74" cy="88" r="10" fill={colors.shade} opacity=".75" /><circle cx="163" cy="76" r="7" fill={colors.shade} opacity=".72" /><circle cx="180" cy="150" r="6" fill={colors.shade} opacity=".7" /></>}
+        {hasMask && <path d="M62 102c14-24 35-27 58-12 23-15 44-12 58 12-14 21-39 19-58 5-19 14-44 16-58-5z" fill={colors.shade} opacity=".95" />}
+        {hasStripes && <><path d="M74 80l20 18M166 80l-20 18M69 94l19 12M171 94l-19 12" stroke={colors.shade} strokeWidth="6" strokeLinecap="round" opacity=".7" /></>}
         <ellipse cx="96" cy="106" rx="10" ry="14" fill={colors.shade} opacity=".24" />
         <ellipse cx="144" cy="106" rx="10" ry="14" fill={colors.shade} opacity=".24" />
-        <ellipse cx="96" cy="103" rx="8" ry="11" fill="#233f42" /><ellipse cx="144" cy="103" rx="8" ry="11" fill="#233f42" />
+        <ellipse cx="96" cy={isFrog ? '77' : '103'} rx={isFrog ? '10' : '8'} ry={isFrog ? '13' : '11'} fill="#233f42" /><ellipse cx="144" cy={isFrog ? '77' : '103'} rx={isFrog ? '10' : '8'} ry={isFrog ? '13' : '11'} fill="#233f42" />
         <circle cx="93" cy="99" r="3" fill="white" /><circle cx="141" cy="99" r="3" fill="white" />
-        <ellipse cx="120" cy="123" rx="11" ry="8" fill={colors.shade} />
+        {isPenguin && <path d="M108 119l12 9 12-9-12 20z" fill="#e5a85f" />}
+        {!isPenguin && <ellipse cx="120" cy="123" rx={isCrocodile ? '16' : '11'} ry="8" fill={colors.shade} />}
         <path d="M120 130c-7 0-10 7-14 7M120 130c7 0 10 7 14 7" fill="none" stroke={colors.shade} strokeWidth="3" strokeLinecap="round" />
         <ellipse cx="75" cy="126" rx="13" ry="7" fill="#ed8a83" opacity=".5" /><ellipse cx="165" cy="126" rx="13" ry="7" fill="#ed8a83" opacity=".5" />
       </g>
-      {accessory && <g className="illustration-accessory"><circle cx="198" cy="35" r="22" fill="white" opacity=".82" /><text x="198" y="43" textAnchor="middle" fontSize="26">{accessory}</text></g>}
+      {wearsHoodie && <><path d="M70 146c18 12 82 12 100 0l19 54H51z" fill="#e68064" stroke="#b95b54" strokeWidth="3" /><path d="M91 153c7 12 31 12 38 0" fill="none" stroke="#ffd1a3" strokeWidth="5" /></>}
+      {wearsScarf && <><path d="M72 139c25 15 71 15 96 0l-6 21c-26 11-58 11-84 0z" fill="#9d84d7" stroke="#745db2" strokeWidth="3" /><path d="M151 153l19 43-15 5-15-40z" fill="#b9a2e4" /></>}
+      {wearsShoes && <><ellipse cx="86" cy="207" rx="22" ry="13" fill="#7ac0d1" stroke="#4c91aa" strokeWidth="3" /><ellipse cx="154" cy="207" rx="22" ry="13" fill="#7ac0d1" stroke="#4c91aa" strokeWidth="3" /><path d="M72 207h28M140 207h28" stroke="#fff" strokeWidth="3" /></>}
+      {wearsCrown && <><path d="M82 52l8-27 28 19 28-19 8 27z" fill="#f5ca5b" stroke="#c28b38" strokeWidth="3" /><circle cx="90" cy="28" r="4" fill="#fff0a0" /><circle cx="120" cy="43" r="4" fill="#fff0a0" /><circle cx="150" cy="28" r="4" fill="#fff0a0" /></>}
+      <g className="illustration-sparkles"><circle cx="35" cy="61" r="3" fill="#fff" /><circle cx="205" cy="172" r="3" fill="#fff" /><path d="M39 42v14M32 49h14M201 186v14M194 193h14" stroke="#fff" strokeWidth="2" strokeLinecap="round" opacity=".8" /></g>
     </svg>
   )
 }
