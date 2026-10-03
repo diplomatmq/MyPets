@@ -82,7 +82,7 @@ export async function submitPetAction(webApp: TelegramWebApp, partnershipId: str
 
 export type TelegramUserResponse = {
   authenticated: boolean
-  user: { id: number; first_name: string; last_name?: string; username?: string }
+  user: { id: number; first_name: string; last_name?: string; username?: string; photo_url?: string }
 }
 
 export function haptic(webApp: TelegramWebApp | null, style: 'light' | 'medium' | 'heavy' = 'light') {
